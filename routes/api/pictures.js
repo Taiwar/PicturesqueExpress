@@ -6,7 +6,7 @@ const auth = require('../auth');
 
 // Preload picture objects on routes with ':picture'
 router.param('picture', function(req, res, next, slug) {
-    Picture.findOne({ slug: slug})
+    Picture.findOne({slug: slug})
         .populate('picture')
         .then(function (picture) {
             if (!picture) { return res.sendStatus(404); }
@@ -75,7 +75,6 @@ router.post('/', auth.required, function(req, res, next) {
         picture.author = user;
 
         return picture.save().then(function(){
-            console.log(picture.author);
             return res.json({picture: picture.toJSON()});
         });
     }).catch(next);
