@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
-const slug = require('slug');
+const slugify = require('slugify');
 const User = mongoose.model('User');
 
 const PictureSchema = new mongoose.Schema({
@@ -24,7 +24,7 @@ PictureSchema.pre('validate', function(next){
 });
 
 PictureSchema.methods.slugify = function() {
-    this.slug = slug(this.title) + '-' + (Math.random() * Math.pow(36, 6) | 0).toString(36);
+    this.slug = slugify(this.title) + '-' + (Math.random() * Math.pow(36, 6) | 0).toString(36);
 };
 
 PictureSchema.methods.toJSON = function() {
