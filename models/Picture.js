@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');
 const slugify = require('slugify');
-const User = mongoose.model('User');
 
 const PictureSchema = new mongoose.Schema({
     slug: {type: String, lowercase: true, unique: true},

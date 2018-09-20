@@ -13,19 +13,34 @@ String.prototype.capitalize = function() {
 
 // read all pictures from folder and update db
 const dropoffFolder = './public/picture_dropoff/';
-const category_pattern = new RegExp('.*public\\/picture_dropoff\\/*([^]*)');
 const title_pattern = /[^\\]*(?=[.][a-zA-Z]+$)/;
 let local_images = [];
 
 function walkDir(dir, user, next) {
     if (!fs.statSync(dir).isDirectory()) {
-        let img_path = 'http://192.168.178.33:3000/static/picture_dropoff/' + category_pattern.exec(dir)[1];
+        console.log("Dir", dir);
+        console.log("split", dir.split(path.sep));
+        const split = dir.split(path.sep);
+        const categories = split.slice(2, split.length - 1);
+        console.log("Cats", categories);
+        const img_file = path.basename(dir);
+        let img_path = 'http://localhost:3000/static/picture_dropoff/' + img_file;
+        if (categories.length > 0) {
+            let categories_string = "";
+            categories.forEach((category) => {
+                categories_string += category + "/";
+            });
+            img_path = 'http://localhost:3000/static/picture_dropoff/' + categories_string + img_file;
+        }
         Picture.findOne({image: img_path}, function (err, obj) {
             if (!obj) {
                 let picture = new Picture();
-                picture.title = title_pattern.exec(path.basename(dir));
-                if (path.basename(path.dirname(dir)) !== "picture_dropoff") {
-                    let img_categories = category_pattern.exec(dir)[1].split('/').slice(0, -1);
+                picture.title = title_pattern.exec(img_file);
+                if (path.basename(img_file) !== "picture_dropoff") {
+                    let img_categories = [];
+                    if (categories) {
+                        img_categories = categories;
+                    }
                     Array.prototype.push.apply(picture.tagList, img_categories);
                     /**img_categories.forEach(img_category => {
                         picture.title = img_category.capitalize() + " - " + picture.title;
